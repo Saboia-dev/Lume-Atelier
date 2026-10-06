@@ -1,0 +1,17 @@
+import { treatments, clinic, money } from "./lume-content";
+export function guideResponse(question: string) {
+  const q = question.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  if (/diagnost|alerg|acne|rosace|ferid|dor|medic|remedio|gravidez|gestante|mancha|doenca/.test(q)) return "Uma condição de pele precisa de avaliação profissional. Posso explicar os rituais da Lume e como reservar uma avaliação, mas não faço diagnóstico nem indico tratamentos para condições de saúde. Quer começar por uma conversa presencial?";
+  if (/cancel|remarc|alterar/.test(q)) return "Você pode cancelar uma reserva futura na sua área pessoal e reservar outro horário. Pedimos, sempre que possível, 24 horas de antecedência. Abra Minha área para consultar seus encontros.";
+  if (/horario|funciona|aberto|sabado|domingo/.test(q) && !/avaliacao/.test(q)) return `O atelier atende de ${clinic.hours.charAt(0).toLowerCase()+clinic.hours.slice(1)} A disponibilidade atual aparece ao escolher uma data no agendamento. Domingo não há atendimento.`;
+  if (/onde|endereco|cidade|localiza/.test(q)) return `A proposta da Lume é para ${clinic.city}. A localização exata será informada pela equipe responsável antes da visita. Você pode explorar o espaço e os rituais no site.`;
+  if (/agend|reserv|marcar/.test(q)) return "Para reservar: escolha Avaliação inicial ou um ritual, selecione o dia e um dos horários disponíveis e confirme seus dados. Você encontrará a reserva na sua área pessoal. A avaliação dura 30 minutos e custa R$ 60. Nenhum pagamento é cobrado pelo site nesta etapa.";
+  if (/avaliacao|primeira|comec|nao sei/.test(q)) return "Na avaliação inicial, temos 30 minutos para conversar, entender sua rotina e avaliar presencialmente o cuidado adequado. O valor é R$ 60. Você conhece as opções antes de decidir, sem obrigação de contratar um ritual. Posso ajudar a reservar esse primeiro encontro.";
+  const t = treatments.find(t => q.includes(t.id) || q.includes(t.name.toLowerCase().replace("ritual ", "")));
+  if (t) return `${t.name}: ${t.description}\n\nDuração: ${t.duration} minutos. Valor: ${money(t.price)} por sessão.\n\nEtapas: ${t.steps.join("; ")}. A avaliação presencial orienta o cuidado.`;
+  if (/ritua|preco|valor|custa|tratament|opcoes|servico/.test(q)) return `Nossos rituais:\n\n${treatments.map(t => `${t.name} — ${t.duration} min, ${money(t.price)}. ${t.short}`).join("\n\n")}\n\nSe preferir, comece com a avaliação de 30 minutos por R$ 60.`;
+  if (/hidrata|vico|brilho/.test(q)) return "Você pode conhecer o Ritual luminosidade: uma experiência facial com atenção à hidratação e ao viço. Dura 75 minutos e custa R$ 260. A escolha final dos produtos e etapas depende da avaliação presencial.";
+  if (/corpo|relaxa|pausa|massagem/.test(q)) return "O Ritual corpo leve é uma experiência de massagem de relaxamento, com pressão adaptada ao seu conforto. Dura 60 minutos e custa R$ 210. A equipe conversa com você antes de começar.";
+  if (/oi|ola|bom dia|boa tarde|boa noite/.test(q)) return "Olá! Que bom ter você por aqui. Posso apresentar nossos quatro rituais, explicar a primeira avaliação ou ajudar com sua reserva. Por onde gostaria de começar?";
+  return "Posso ajudar com os rituais, duração, valores, horários e agendamento da Lume. Para uma orientação pessoal sobre sua pele, o melhor começo é a avaliação presencial. O que gostaria de saber sobre a sua visita?";
+}
